@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { AppProvider, UserProvider } from "@realm/react";
+import LoginScreen from "./index";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,15 +33,19 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="signUp/index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: true, title: "teste" }}
-        />
-      </Stack>
-    </ThemeProvider>
+    <AppProvider id="application-0-vmuencj">
+      {/* <UserProvider fallback={LoginScreen}> */}
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="signUp/index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(tabs)"
+            options={{ headerShown: true, title: "teste" }}
+          />
+        </Stack>
+      </ThemeProvider>
+      {/* </UserProvider> */}
+    </AppProvider>
   );
 }

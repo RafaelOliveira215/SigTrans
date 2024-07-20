@@ -3,14 +3,18 @@ import * as S from "./styles";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Input from "@/components/input";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import Realm from "realm";
+import { useApp } from "@realm/react";
 
 const validationSchema = Yup.object({
   login: Yup.string().required("Login é obrigatorio"),
   password: Yup.string().required("Senha é obrigatorio"),
 });
 
-const LoginScreen = () => {
+const SignUpScreen = () => {
+  const app = useApp();
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       login: "",
@@ -18,9 +22,22 @@ const LoginScreen = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log("Form data", values);
+      handleSignUp(values);
     },
   });
+
+  const handleSignUp = async (values: { login: string; password: string }) => {
+    try {
+      await app.emailPasswordAuth
+        .registerUser({
+          email: values.login,
+          password: values.password,
+        })
+        .then(() => router.push("/details"));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <S.Container>
       <Input
@@ -55,4 +72,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default SignUpScreen;
