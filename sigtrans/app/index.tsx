@@ -3,7 +3,9 @@ import * as S from "./styles";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Input from "@/components/input";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { useApp } from "@realm/react";
+import Realm from "realm";
 
 const validationSchema = Yup.object({
   login: Yup.string().required("Login é obrigatorio"),
@@ -11,6 +13,8 @@ const validationSchema = Yup.object({
 });
 
 const LoginScreen = () => {
+  const app = useApp();
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       login: "",
@@ -18,9 +22,22 @@ const LoginScreen = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log("Form data", values);
+      handleSignUp(values);
     },
   });
+
+  const handleSignUp = async (values: { login: string; password: string }) => {
+    const credencials = Realm.Credentials.emailPassword({
+      email: values.login,
+      password: values.password,
+    });
+    try {
+      await app.logIn(credencials).then(() => router.push("/(tabs)"));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <S.Container>
       <Input
