@@ -10,8 +10,10 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AppProvider, UserProvider } from "@realm/react";
+import { AppProvider, RealmProvider, UserProvider } from "@realm/react";
 import LoginScreen from "./index";
+import { ActivityIndicator, View } from "react-native";
+import AitsScreen from "./(tabs)";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,18 +36,46 @@ export default function RootLayout() {
 
   return (
     <AppProvider id="application-0-vmuencj">
-      {/* <UserProvider fallback={LoginScreen}> */}
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="signUp/index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: true, title: "teste" }}
-          />
-        </Stack>
-      </ThemeProvider>
-      {/* </UserProvider> */}
+      <UserProvider fallback={LoginScreen}>
+        <>
+          <RealmProvider
+            sync={{
+              flexible: true,
+              onError: (_, error) => {
+                console.error(error);
+              },
+            }}
+            fallback={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
+            }
+          >
+            <AitsScreen />
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="signUp/index"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: true, title: "teste" }}
+                />
+              </Stack>
+            </ThemeProvider>
+          </RealmProvider>
+        </>
+      </UserProvider>
     </AppProvider>
   );
 }

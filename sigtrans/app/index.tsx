@@ -15,6 +15,23 @@ const validationSchema = Yup.object({
 const LoginScreen = () => {
   const app = useApp();
   const router = useRouter();
+
+  const handleSignUp = async (values: { login: string; password: string }) => {
+    const credentials = Realm.Credentials.emailPassword({
+      email: values.login,
+      password: values.password,
+    });
+
+    try {
+      console.log("teste");
+      await app.logIn(credentials);
+      console.log("teste2");
+      router.push("/(tabs)");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       login: "",
@@ -25,18 +42,6 @@ const LoginScreen = () => {
       handleSignUp(values);
     },
   });
-
-  const handleSignUp = async (values: { login: string; password: string }) => {
-    const credencials = Realm.Credentials.emailPassword({
-      email: values.login,
-      password: values.password,
-    });
-    try {
-      await app.logIn(credencials).then(() => router.push("/(tabs)"));
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <S.Container>

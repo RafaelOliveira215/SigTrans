@@ -6,6 +6,9 @@ import Input from "@/components/input";
 import * as S from "./styles";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
+import { realmContext } from "../realm/index";
+import { Item } from "../schema";
+import { useUser } from "@realm/react";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nome é obrigatorio"),
@@ -17,6 +20,9 @@ const createATI = () => {
   const [date, setDate] = useState<string>(dayjs().format("DD/MM/YYYY"));
   const [show, setShow] = useState(false);
 
+  const { useRealm, useQuery } = realmContext;
+  const realm = useRealm();
+  const user = useUser();
   const onChangeDate = (selectedDate: any) => {
     setShow(false);
     setDate(dayjs(selectedDate.nativeEvent.timestamp).format("DD/MM/YYYY"));
@@ -26,6 +32,18 @@ const createATI = () => {
         dayjs(selectedDate.nativeEvent.timestamp).format("DD/MM/YYYY")
       );
     }
+  };
+  console.log(user);
+  const createAti = () => {
+    realm.write(() => {
+      return new Item(realm, {
+        // userId: user?.id,
+        name: "string",
+        date: "string",
+        agent: "string",
+        status: "string",
+      });
+    });
   };
 
   const formik = useFormik({
